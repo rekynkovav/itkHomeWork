@@ -1,9 +1,13 @@
 package ru.suveren.task1;
 
+import java.util.ArrayDeque;
+import java.util.NoSuchElementException;
+
 public class StringBuilder {
     int capacity;
     byte[] arrayString;
     int count = 0;
+    ArrayDeque<String> stringPool = new ArrayDeque<>();
 
     public StringBuilder() {
         capacity = 16;
@@ -20,7 +24,17 @@ public class StringBuilder {
         }
     }
 
-    public StringBuilder undo(String str) {
+    private void saveSnapshot(byte[] arrayString) {
+        stringPool.add(new String(arrayString, 0, count));
+    }
+
+    public String undo() throws NoSuchElementException {
+        String str = stringPool.getLast();
+        stringPool.removeLast();
+        return str;
+    }
+
+    public StringBuilder append(String str) {
         if (str == null) {
             return this;
         }
@@ -28,6 +42,7 @@ public class StringBuilder {
         if (length <= arrayString.length - count) {
             System.arraycopy(str.getBytes(), 0, arrayString, count, length);
             count += length;
+            saveSnapshot(arrayString);
             return this;
         }
         neededSpace(length);
@@ -36,6 +51,7 @@ public class StringBuilder {
         System.arraycopy(str.getBytes(), 0, tempArray, count, length);
         count += length;
         arrayString = tempArray;
+        saveSnapshot(arrayString);
         return this;
     }
 
@@ -47,7 +63,7 @@ public class StringBuilder {
         }
     }
 
-    public String convertToString() {
+    public String toString() {
         return new String(arrayString, 0, count);
     }
 }
