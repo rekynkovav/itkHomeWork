@@ -1,30 +1,27 @@
 package ru.suveren.task3;
 
-import java.util.ArrayDeque;
-import java.util.LinkedList;
-
 public class BlockingQueue {
 
-    ArrayDeque<Runnable> runnableArrayDeque = new ArrayDeque(10);
-    LinkedList
+    Runnable[] runnableArray = new Runnable[10];
+    int index = 0;
 
     public synchronized void enqueue(Runnable runnable) throws InterruptedException {
-        if (size() == 10) {
+        if (index == 10) {
             wait();
         } else {
-            runnableArrayDeque.addLast(runnable);
+            runnableArray[index] = runnable;
+            index++;
         }
     }
 
-    public synchronized void dequeue() throws InterruptedException {
-        if (size() != 0) {
-            runnableArrayDeque.getFirst();
-        } else {
+    public synchronized Runnable dequeue() throws InterruptedException {
+        if (index == 0) {
             wait();
         }
+        return runnableArray[index--];
     }
 
-    private int size() {
-        return runnableArrayDeque.size();
+    public int size() {
+        return runnableArray.length;
     }
 }
