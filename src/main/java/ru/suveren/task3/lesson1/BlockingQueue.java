@@ -1,4 +1,4 @@
-package ru.suveren.task3;
+package ru.suveren.task3.lesson1;
 
 public class BlockingQueue {
 
@@ -6,22 +6,22 @@ public class BlockingQueue {
     int index = 0;
 
     public synchronized void enqueue(Runnable runnable) throws InterruptedException {
-        if (index == 10) {
+        while (index == 10) {
             wait();
-        } else {
-            runnableArray[index] = runnable;
-            index++;
         }
+        runnableArray[index++] = runnable;
+        notifyAll();
     }
 
     public synchronized Runnable dequeue() throws InterruptedException {
-        if (index == 0) {
+        while (index == 0) {
             wait();
         }
+        notifyAll();
         return runnableArray[index--];
     }
 
-    public int size() {
+    public synchronized int size() {
         return runnableArray.length;
     }
 }
