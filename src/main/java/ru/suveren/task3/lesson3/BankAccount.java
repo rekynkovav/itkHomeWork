@@ -1,7 +1,13 @@
 package ru.suveren.task3.lesson3;
 
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
 public class BankAccount {
     int balance;
+
+    Lock lock1 = new ReentrantLock();
+    Lock lock2 = new ReentrantLock();
 
     public BankAccount(int balance) {
         if (balance > 0) {
@@ -12,14 +18,24 @@ public class BankAccount {
     }
 
     public void deposit(int sum) {
-        balance += sum;
+        try {
+            lock1.lock();
+            balance += sum;
+        } finally {
+            lock1.unlock();
+        }
     }
 
     public void withdraw(int sum) {
-        if (balance - sum >= 0) {
-            balance -= sum;
-        } else {
-            throw new RuntimeException("некорректная сумма");
+        try {
+            lock2.lock();
+            if (balance - sum >= 0) {
+                balance -= sum;
+            } else {
+                throw new RuntimeException("некорректная сумма");
+            }
+        } finally {
+            lock2.unlock();
         }
     }
 
