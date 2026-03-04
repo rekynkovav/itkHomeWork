@@ -11,7 +11,7 @@ import java.util.Optional;
 
 
 @Repository
-public interface BookRepository extends JpaRepository<Book, Long> {
+public interface BookRepository extends JpaRepository<Long, Book> {
 
     Optional<Book> getBookById(Long id);
 

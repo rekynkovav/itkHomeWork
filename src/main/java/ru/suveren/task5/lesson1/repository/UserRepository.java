@@ -10,7 +10,7 @@ import ru.suveren.task5.lesson1.model.User;
 import java.util.Optional;
 
 @Repository
-public interface UserRepository extends JpaRepository<User, Long> {
+public interface UserRepository extends JpaRepository<Long, User> {
     @Modifying
     @Query("UPDATE Author u SET u.email = :email WHERE u.id = :id")
     int updateUserFields(@Param("id") Long id,
