@@ -1,4 +1,4 @@
-package task5.lesson1.controller;
+package task5.lesson1.controller.jsonViewTest;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
