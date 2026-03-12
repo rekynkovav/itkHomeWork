@@ -25,9 +25,9 @@ public class BooksController {
     public ResponseEntity<?> save(@RequestBody Book book) {
         try {
             bookService.save(book);
-            return ResponseEntity.ok("книга сохранена");
+            return ResponseEntity.ok("book saved");
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("ошибка на стороне сервера");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("error in server");
         }
     }
 
@@ -42,7 +42,7 @@ public class BooksController {
             }
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("ошибка на стороне сервера");
+                    .body("error in server");
         }
     }
 
@@ -52,13 +52,13 @@ public class BooksController {
             book.setId(id);
             boolean updated = bookService.update(book);
             if (updated) {
-                return ResponseEntity.ok("книга обновленна");
+                return ResponseEntity.ok("book update");
             } else {
                 return ResponseEntity.notFound().build();
             }
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("ошибка на стороне сервера");
+                    .body("error in server");
         }
     }
 
@@ -66,7 +66,7 @@ public class BooksController {
     public ResponseEntity<?> delete(@PathVariable Long id) {
         try {
             bookService.delete(id);
-            return ResponseEntity.ok("Книга удалена");
+            return ResponseEntity.ok("book delete");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }

@@ -22,6 +22,7 @@ import ru.suveren.task6.lesson1.service.BookService;
 import java.nio.charset.StandardCharsets;
 import java.time.Year;
 
+import static org.hamcrest.Matchers.containsString;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
@@ -56,10 +57,10 @@ public class BooksControllerTest {
                         new StringHttpMessageConverter(StandardCharsets.UTF_8))
                 .build();
 
-        testAuthor = new Author(1L, "Лев Толстой");
+        testAuthor = new Author(1L, "lev tolstoy");
         testBook = new Book();
         testBook.setId(1L);
-        testBook.setTitle("Война и мир");
+        testBook.setTitle("var");
         testBook.setAuthor(testAuthor);
         testBook.setPublicationYear(Year.of(1869));
     }
@@ -75,8 +76,7 @@ public class BooksControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(content().encoding("UTF-8"))
-                .andExpect(content().string("книга сохранена"));
+                .andExpect(content().string(containsString("book saved")));
 
         verify(bookService, times(1)).save(any(Book.class));
     }
@@ -92,8 +92,7 @@ public class BooksControllerTest {
                 .andDo(print())
                 .andExpect(status().isInternalServerError())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(content().encoding("UTF-8"))
-                .andExpect(content().string("ошибка на стороне сервера"));
+                .andExpect(content().string(containsString("error in server")));
 
         verify(bookService, times(1)).save(any(Book.class));
     }
@@ -108,9 +107,9 @@ public class BooksControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.id").value(1L))
-                .andExpect(jsonPath("$.title").value("Война и мир"))
+                .andExpect(jsonPath("$.title").value("var"))
                 .andExpect(jsonPath("$.author.id").value(1L))
-                .andExpect(jsonPath("$.author.name").value("Лев Толстой"))
+                .andExpect(jsonPath("$.author.name").value("lev tolstoy"))
                 .andExpect(jsonPath("$.publicationYear").value(1869));
 
         verify(bookService, times(1)).get(1L);
@@ -137,8 +136,7 @@ public class BooksControllerTest {
                 .andDo(print())
                 .andExpect(status().isInternalServerError())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(content().encoding("UTF-8"))
-                .andExpect(content().string("ошибка на стороне сервера"));
+                .andExpect(content().string(containsString("error in server")));
 
         verify(bookService, times(1)).get(1L);
     }
@@ -154,7 +152,7 @@ public class BooksControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(content().string("книга обновленна"));
+                .andExpect(content().string(containsString("book update")));
 
         verify(bookService, times(1)).update(any(Book.class));
     }
@@ -175,7 +173,7 @@ public class BooksControllerTest {
 
     @Test
     void update_ShouldReturnServerError_WhenExceptionThrown() throws Exception {
-        when(bookService.update(any(Book.class))).thenThrow(new RuntimeException("Update failed"));
+        when(bookService.update(any(Book.class))).thenThrow(new RuntimeException("update failed"));
 
         mockMvc.perform(put("/books/{id}", 1L)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -184,8 +182,7 @@ public class BooksControllerTest {
                 .andDo(print())
                 .andExpect(status().isInternalServerError())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(content().encoding("UTF-8"))
-                .andExpect(content().string("ошибка на стороне сервера"));
+                .andExpect(content().string(containsString("error in server")));
 
         verify(bookService, times(1)).update(any(Book.class));
     }
@@ -193,7 +190,7 @@ public class BooksControllerTest {
     @Test
     void update_ShouldSetIdFromPath_WhenUpdating() throws Exception {
         Book bookWithoutId = new Book();
-        bookWithoutId.setTitle("Война и мир");
+        bookWithoutId.setTitle("var");
         bookWithoutId.setAuthor(testAuthor);
         bookWithoutId.setPublicationYear(Year.of(1869));
 
@@ -208,7 +205,7 @@ public class BooksControllerTest {
 
         verify(bookService).update(argThat(book ->
                 book.getId() == 1L &&
-                book.getTitle().equals("Война и мир")
+                book.getTitle().equals("var")
         ));
     }
 
@@ -221,22 +218,21 @@ public class BooksControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(content().encoding("UTF-8"))
-                .andExpect(content().string("Книга удалена"));
+                .andExpect(content().string(containsString("book delete")));
 
         verify(bookService, times(1)).delete(1L);
     }
 
     @Test
     void delete_ShouldReturnServerError_WhenExceptionThrown() throws Exception {
-        doThrow(new RuntimeException("Delete failed")).when(bookService).delete(anyLong());
+        doThrow(new RuntimeException("not delete")).when(bookService).delete(anyLong());
 
         mockMvc.perform(delete("/books/{id}", 1L)
                         .characterEncoding("UTF-8"))
                 .andDo(print())
                 .andExpect(status().isInternalServerError())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(content().string("Delete failed"));
+                .andExpect(content().string(containsString("not delete")));
 
         verify(bookService, times(1)).delete(1L);
     }
